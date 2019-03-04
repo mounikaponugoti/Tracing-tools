@@ -59,7 +59,7 @@ To build only mProfile tool for 32-bit target, include `TARGET=ia32` while invok
 If makefile is not modified to include `PIN_ROOT`, use the following command to build mProfile from outside of pin root directory
 ```
 -bash-4.2$ make obj-intel64/mProfile.so TARGET=intel64 PIN_ROOT=/opt/pin-3.7-97619-g0d0c92f4f-gcc-linux
--bash-4.2$ make obj-intel64/mProfile.so TARGET=ia32 PIN_ROOT=/opt/pin-3.7-97619-g0d0c92f4f-gcc-linux
+-bash-4.2$ make obj-ia32/mProfile.so TARGET=ia32 PIN_ROOT=/opt/pin-3.7-97619-g0d0c92f4f-gcc-linux
 ```
 To build all the available tools in ManualExamples directory:
 ```
