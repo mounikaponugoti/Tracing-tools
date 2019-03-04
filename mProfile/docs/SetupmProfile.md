@@ -1,6 +1,6 @@
 #	Setup mProfile Tool
 * Prerequisites: Linux computer with intel Pin tool.
-*	Latest version of pin can be downloaded [here](https://software.intel.com/en-us/articles/pin-a-binary-instrumentation-tool-download).
+*	Latest version of pin can be downloaded [here](https://software.intel.com/en-us/articles/pin-a-binary-instrumentation-tool-downloads).
 *	To learn more about Pin visit [here](https://software.intel.com/sites/landingpage/pintool/docs/97619/Pin/html/) <br/>
 
 mProfile or any other pin tool can be build outside the pin root directory or with in the pin root directory. 
