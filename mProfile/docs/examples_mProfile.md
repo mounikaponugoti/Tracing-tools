@@ -31,7 +31,8 @@ the control flow statistics while running `cat` shell command.
   
   * Statistics file generated with `-mcf` (by default set) gives the control-flow instruction details of the program. 
   It gives number of branch instructions which are conditional (taken/not taken) and unconditional (direct and indirect).
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     -bash-4.2$ cat mProfile.out2019_3_3_18.23.33_mcf.Statistics
     Instrumentation Time: 903.173 ms
     Number of Threads: 1
@@ -98,6 +99,7 @@ instructions are collected and written to the statistics file.
   control-flow instruction, whether the branch is conditional (C) or unconditional (U), whether the branch is direct (D) or 
   indirect (I), and whether the branch is taken (T) or not (NT). In case of binary traces, threadid is 1-byte, instruction 
   address is 8-bytes, branch target is 8-bytes, branch type and outcome is 1-byte long. 
+  
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     -bash-4.2$ head mProfile.out2019_3_3_18.27.1_mcf.txt
     0, 0x00007fb1aa1b0c33, 0x00007fb1aa1b19b0, U, D, T
@@ -111,10 +113,11 @@ instructions are collected and written to the statistics file.
     0, 0x00007fb1aa1b1a6f, 0x00007fb1aa1b1c68, C, D, T
     0, 0x00007fb1aa1b1c70, 0x00007fb1aa1b1c90, C, D, T
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-*	In this example, *mProfile* records the data-flow traces for `cat` shell command. To turn off the control-flow traces which 
+
+* In this example, *mProfile* records the data-flow traces for `cat` shell command. To turn off the control-flow traces which 
 are enabled by default, `-mcf` is set to 0. When `-mls` is set, by default memory read traces are recorded. Thus, the command given 
 below only instruments and record traces for memory read instructions while executing `/bin/cat`. 
+
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls 1 -trace -a -- cat test.txt
     Or
@@ -131,13 +134,224 @@ below only instruments and record traces for memory read instructions while exec
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   * Statistics file generated with `-mls` gives the data-flow instruction details of the program. By default, it counts the
-  number of load instructions and number of load operands which are 1-byte, 2-bytes (words), 4-bytes (double words), 8-bytes (quard words)
-  10-bytes (extended precision), 32-bytes (octa words), and 64-bytes (hexa words) long.
+   number of load instructions and number of load operands which are 1-byte, 2-bytes (words), 4-bytes (double words), 8-bytes 
+   (quard words) 10-bytes (extended precision), 32-bytes (octa words), and 64-bytes (hexa words) long.
+   
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      -bash-4.2$ cat mProfile.out2019_3_3_18.31.0_mls.Statistics
+      Instrumentation Time: 1547.18 ms
+      Number of Threads: 1
+      Traced 233022 instructions
+      Traced 57491 load instructions
+      Traced 17010 store instructions
+      Skipped 0 instructions
+      All The Threads Total Load Operands: 57487
+              13846 ( %24.09 ) Byte Operands
+              4302 ( %7.48 ) Word Operands
+              7869 ( %13.69 ) DoubleWord Operands
+              30115 ( %52.39 ) QuadWord Operands
+              0 ( %0.00 ) Extended Precision Operands
+              1179 ( %2.05 ) OctaWord Operands
+              176 ( %0.31 ) HexaWord Operands
+              0 ( %0.00 ) Operands of other size
+      -- Thread 0 Total Load Operands: 57487
+              13846 ( %24.09 ) Byte Operands
+              4302 ( %7.48 ) Word Operands
+              7869 ( %13.69 ) DoubleWord Operands
+              30115 ( %52.39 ) QuadWord Operands
+              0 ( %0.00 ) Extended Precision Operands
+              1179 ( %2.05 ) OctaWord Operands
+              176 ( %0.31 ) HexaWord Operands
+              0 ( %0.00 ) Operands of other size
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * For data-flow instructions, a trace record includes the thread id, instruction address, operand address, operand size, 
+    and operand value. In case of binary traces, threadid is 1-byte, instruction address is 8-bytes, operand address is 8-bytes, 
+    operand size is 1-byte, operand value is size of operand size. 
+   
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      -bash-4.2$ head mProfile.out2019_3_3_18.31.0_mls.txt
+      0, 0x00007fb9f5d8e9dd, 0x00007fb9f5fb2e70, 8, 0x000000000000000e
+      0, 0x00007fb9f5d8e9e7, 0x00007fb9f5fb3000, 8, 0x0000000000225e70
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2e80, 8, 0x0000000000000004
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2e90, 8, 0x000000006ffffef5
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ea0, 8, 0x0000000000000005
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2eb0, 8, 0x0000000000000006
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ec0, 8, 0x000000000000000a
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ed0, 8, 0x000000000000000b
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ee0, 8, 0x0000000000000003
+      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ef0, 8, 0x0000000000000002
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* In this example, *mProfile* instruments and records the traces for memory write instructions while executing `cat` shell 
+command. To record the traces for only memory write instructions, `-load` is set to 0 and `-store` is set to 1 since `-load` 
+is set by default when `-mls` is active.
+
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    -bash-4.2$ cat mProfile.out2019_3_3_18.31.0_mls.Statistics
-    Instrumentation Time: 1547.18 ms
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls 1 -load 0 -store 1 -trace -a -- cat test.txt
+    Or
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls -load 0 -store -trace -a -- cat test.txt
+
+    mProfile: Writing data flow traces to text file: mProfile.out2019_3_3_18.36.8_mls.txt
+    Profile descriptor: ThreadID, Instruction Address, Operand Address, Operand Size, Value
+    mProfile: thread begin 0 31832
+    Welcome to mProfile Tutorial!!
+    This is a test file.
+
+    # Trace and statistic file generated by the mProfile tool
+    -bash-4.2$ ls mProfile.out2019_*
+    mProfile.out2019_3_3_18.36.8_mls.Statistics  mProfile.out2019_3_3_18.36.8_mls.txt
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * Trace format and statistics are of same for memory read (`-load`) and memory write instructions (`-store`).
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      -bash-4.2$ cat mProfile.out2019_3_3_18.36.8_mls.Statistics
+      Instrumentation Time: 1420.08 ms
+      Number of Threads: 1
+      Traced 232994 instructions
+      Traced 57479 load instructions
+      Traced 17010 store instructions
+      Skipped 0 instructions
+      All The Threads Total Store Operands: 17674
+              247 ( %1.40 ) Byte Operands
+              98 ( %0.55 ) Word Operands
+              1671 ( %9.45 ) DoubleWord Operands
+              15306 ( %86.60 ) QuadWord Operands
+              0 ( %0.00 ) Extended Precision Operands
+              176 ( %1.00 ) OctaWord Operands
+              176 ( %1.00 ) HexaWord Operands
+              0 ( %0.00 ) Operands of other size
+      -- Thread 0 Total Store Operands: 17674
+              247 ( %1.40 ) Byte Operands
+              98 ( %0.55 ) Word Operands
+              1671 ( %9.45 ) DoubleWord Operands
+              15306 ( %86.60 ) QuadWord Operands
+              0 ( %0.00 ) Extended Precision Operands
+              176 ( %1.00 ) OctaWord Operands
+              176 ( %1.00 ) HexaWord Operands
+              0 ( %0.00 ) Operands of other size
+
+      # Trace file 
+      -bash-4.2$ head mProfile.out2019_3_3_18.36.8_mls.txt
+      0, 0x00007f49b27f6c33, 0x00007fffd2d01828, 8, 0x00007f49b27f6c38
+      0, 0x00007f49b27f79b0, 0x00007fffd2d01820, 8, 0x0000000000000000
+      0, 0x00007f49b27f79b4, 0x00007fffd2d01818, 8, 0x0000000000000000
+      0, 0x00007f49b27f79b6, 0x00007fffd2d01810, 8, 0x0000000000000000
+      0, 0x00007f49b27f79b8, 0x00007fffd2d01808, 8, 0x0000000000000000
+      0, 0x00007f49b27f79ba, 0x00007fffd2d01800, 8, 0x0000000000000000
+      0, 0x00007f49b27f79bf, 0x00007fffd2d017f8, 8, 0x0000000000000000
+      0, 0x00007f49b27f79d6, 0x00007f49b2a1bc60, 8, 0x0007abcaa70f78a8
+      0, 0x00007f49b27f79ee, 0x00007f49b2a1c9e8, 8, 0x00007f49b2a1be70
+      0, 0x00007f49b27f79f8, 0x00007f49b2a1c9d8, 8, 0x00007f49b27f6000
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     
+* In this example, *mProfile* record memory read and memory write traces while executing the `cat` shell command. The recorded 
+traces are piped to a software compression utility `bzip2`.
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls -load 1 -store 1 -trace -a -c bzip2 -- cat test.txt
+    Or
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls -store 1 -trace -a -c bzip2 -- cat test.txt
+    Or
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls -store -trace -a -c bzip2 -- cat test.txt
+    mProfile: Writing data flow traces to text file: mProfile.out2019_3_3_18.42.24_mls.txt
+    Profile descriptor: ThreadID, Load/Store, Instruction Address, Operand Address, Operand Size, Value
+    mProfile: thread begin 0 31885
+    Welcome to mProfile Tutorial!!
+    This is a test file.
+
+    # Trace and statistic file generated by the mProfile tool
+    -bash-4.2$ ls mProfile.out2019_*
+    mProfile.out2019_3_3_18.42.24_mls.Statistics  mProfile.out2019_3_3_18.42.24_mls.txt.bz2
+    # Statistics file 
+    -bash-4.2$ cat mProfile.out2019_3_3_18.42.24_mls.Statistics
+    Instrumentation Time: 2832.01 ms
     Number of Threads: 1
-    Traced 233022 instructions
+    Traced 232994 instructions
+    Traced 57479 load instructions
+    Traced 17010 store instructions
+    Skipped 0 instructions
+    All The Threads Total Load Operands: 57475
+            13846 ( %24.09 ) Byte Operands
+            4302 ( %7.48 ) Word Operands
+            7869 ( %13.69 ) DoubleWord Operands
+            30115 ( %52.40 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            1167 ( %2.03 ) OctaWord Operands
+            176 ( %0.31 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    -- Thread 0 Total Load Operands: 57475
+            13846 ( %24.09 ) Byte Operands
+            4302 ( %7.48 ) Word Operands
+            7869 ( %13.69 ) DoubleWord Operands
+            30115 ( %52.40 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            1167 ( %2.03 ) OctaWord Operands
+            176 ( %0.31 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    All The Threads Total Store Operands: 17674
+            247 ( %1.40 ) Byte Operands
+            98 ( %0.55 ) Word Operands
+            1671 ( %9.45 ) DoubleWord Operands
+            15306 ( %86.60 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            176 ( %1.00 ) OctaWord Operands
+            176 ( %1.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    -- Thread 0 Total Store Operands: 17674
+            247 ( %1.40 ) Byte Operands
+            98 ( %0.55 ) Word Operands
+            1671 ( %9.45 ) DoubleWord Operands
+            15306 ( %86.60 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            176 ( %1.00 ) OctaWord Operands
+            176 ( %1.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+*	In this example, *mProfile* records the control-flow and data-flow traces while executing the `cat` shell command. The recorded 
+traces and statistics are written to the text files (pay attention to the file names and extensions).
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    -bash-4.2$ pin -t obj-intel64/mProfile.so –mcf –mls –load –store –trace -a -- cat test.txt
+    mProfile: Writing control flow traces to text file: mProfile.out2019_3_3_18.45.13_mcf.txt
+    Profile descriptor: ThreadID, Instruction Address, Target Address, Conditional or Unconditional, 
+    Direct or Indirect, Outcome
+
+    mProfile: Writing data flow traces to text file: mProfile.out2019_3_3_18.45.13_mls.txt
+    Profile descriptor: ThreadID, Load/Store, Instruction Address, Operand Address, Operand Size, Value
+    mProfile: thread begin 0 31910
+    Welcome to mProfile Tutorial!!
+    This is a test file.
+
+    # Trace and statistic file generated by the mProfile tool
+    -bash-4.2$ ls mProfile.out2018_*
+    mProfile.out2019_3_3_18.45.13_mcf.Statistics  mProfile.out2019_3_3_18.45.13_mls.Statistics
+    mProfile.out2019_3_3_18.45.13_mcf.txt         mProfile.out2019_3_3_18.45.13_mls.txt
+
+    # Statistics file 
+    -bash-4.2$ cat mProfile.out2019_3_3_18.45.13_mcf.Statistics
+    Instrumentation Time: 2159.44 ms
+    Number of Threads: 1
+    Traced 233028 instructions
+    Skipped 0 instructions
+    All The Threads Total Control Transfer Instructions: 51026
+            21859 ( %42.84 ) Conditional Direct Taken
+            22089 ( %43.29 ) Conditional Direct Not Taken
+            4605 ( %9.02 ) Unconditional Direct
+            2473 ( %4.85 ) Unconditional Indirect
+                    1634 ( %66.07 ) Returns
+                    839 ( %33.93 ) Other
+    -- Thread 0 Total Control Transfer Instructions: 51026
+            21859 ( %42.84 ) Conditional Direct Taken
+            22089 ( %43.29 ) Conditional Direct Not Taken
+            4605 ( %9.02 ) Unconditional Direct
+            2473 ( %4.85 ) Unconditional Indirect
+                    1634 ( %66.07 ) Returns
+                    839 ( %33.93 ) Other
+
+    -bash-4.2$ cat mProfile.out2019_3_3_18.45.13_mls.Statistics
+    Instrumentation Time: 2159.44 ms
+    Number of Threads: 1
+    Traced 233028 instructions
     Traced 57491 load instructions
     Traced 17010 store instructions
     Skipped 0 instructions
@@ -159,52 +373,6 @@ below only instruments and record traces for memory read instructions while exec
             1179 ( %2.05 ) OctaWord Operands
             176 ( %0.31 ) HexaWord Operands
             0 ( %0.00 ) Operands of other size
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      
-    * For data-flow instructions, a trace record includes the thread id, instruction address, operand address, operand size, 
-    and operand value. In case of binary traces, threadid is 1-byte, instruction address is 8-bytes, operand address is 8-bytes, 
-    operand size is 1-byte, operand value is size of operand size. 
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      -bash-4.2$ head mProfile.out2019_3_3_18.31.0_mls.txt
-      0, 0x00007fb9f5d8e9dd, 0x00007fb9f5fb2e70, 8, 0x000000000000000e
-      0, 0x00007fb9f5d8e9e7, 0x00007fb9f5fb3000, 8, 0x0000000000225e70
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2e80, 8, 0x0000000000000004
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2e90, 8, 0x000000006ffffef5
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ea0, 8, 0x0000000000000005
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2eb0, 8, 0x0000000000000006
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ec0, 8, 0x000000000000000a
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ed0, 8, 0x000000000000000b
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ee0, 8, 0x0000000000000003
-      0, 0x00007fb9f5d8ea57, 0x00007fb9f5fb2ef0, 8, 0x0000000000000002
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*	In this example, *mProfile* instruments and records the traces for memory write instructions while executing `cat` shell 
-command. To record the traces for only memory write instructions, `-load` is set to 0 and `-store` is set to 1 since `-load` 
-is set by default when `-mls` is active.
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls 1 -load 0 -store 1 -trace -a -- cat test.txt
-    Or
-    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf 0 -mls -load 0 -store -trace -a -- cat test.txt
-
-    mProfile: Writing data flow traces to text file: mProfile.out2019_3_3_18.36.8_mls.txt
-    Profile descriptor: ThreadID, Instruction Address, Operand Address, Operand Size, Value
-    mProfile: thread begin 0 31832
-    Welcome to mProfile Tutorial!!
-    This is a test file.
-
-    # Trace and statistic file generated by the mProfile tool
-    -bash-4.2$ ls mProfile.out2019_*
-    mProfile.out2019_3_3_18.36.8_mls.Statistics  mProfile.out2019_3_3_18.36.8_mls.txt
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  * Trace format and statistics are of same for memory read (`-load`) and memory write instructions (`-store`).
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    -bash-4.2$ cat mProfile.out2019_3_3_18.36.8_mls.Statistics
-    Instrumentation Time: 1420.08 ms
-    Number of Threads: 1
-    Traced 232994 instructions
-    Traced 57479 load instructions
-    Traced 17010 store instructions
-    Skipped 0 instructions
     All The Threads Total Store Operands: 17674
             247 ( %1.40 ) Byte Operands
             98 ( %0.55 ) Word Operands
@@ -225,16 +393,473 @@ is set by default when `-mls` is active.
             0 ( %0.00 ) Operands of other size
 
     # Trace file 
-    -bash-4.2$ head mProfile.out2019_3_3_18.36.8_mls.txt
-    0, 0x00007f49b27f6c33, 0x00007fffd2d01828, 8, 0x00007f49b27f6c38
-    0, 0x00007f49b27f79b0, 0x00007fffd2d01820, 8, 0x0000000000000000
-    0, 0x00007f49b27f79b4, 0x00007fffd2d01818, 8, 0x0000000000000000
-    0, 0x00007f49b27f79b6, 0x00007fffd2d01810, 8, 0x0000000000000000
-    0, 0x00007f49b27f79b8, 0x00007fffd2d01808, 8, 0x0000000000000000
-    0, 0x00007f49b27f79ba, 0x00007fffd2d01800, 8, 0x0000000000000000
-    0, 0x00007f49b27f79bf, 0x00007fffd2d017f8, 8, 0x0000000000000000
-    0, 0x00007f49b27f79d6, 0x00007f49b2a1bc60, 8, 0x0007abcaa70f78a8
-    0, 0x00007f49b27f79ee, 0x00007f49b2a1c9e8, 8, 0x00007f49b2a1be70
-    0, 0x00007f49b27f79f8, 0x00007f49b2a1c9d8, 8, 0x00007f49b27f6000
+    -bash-4.2$ head mProfile.out2019_3_3_18.45.13_mcf.txt
+    0, 0x00007f502fec7c33, 0x00007f502fec89b0, U, D, T
+    0, 0x00007f502fec89ff, 0x00007f502fec8a92, C, D, NT
+    0, 0x00007f502fec8a41, 0x00007f502fec8a5f, U, D, T
+    0, 0x00007f502fec8a63, 0x00007f502fec8a48, C, D, T
+    0, 0x00007f502fec8a5d, 0x00007f502fec8a92, C, D, NT
+    0, 0x00007f502fec8a63, 0x00007f502fec8a48, C, D, T
+    0, 0x00007f502fec8a5d, 0x00007f502fec8a92, C, D, NT
+    0, 0x00007f502fec8a63, 0x00007f502fec8a48, C, D, NT
+    0, 0x00007f502fec8a6f, 0x00007f502fec8c68, C, D, T
+    0, 0x00007f502fec8c70, 0x00007f502fec8c90, C, D, T
+
+    -bash-4.2$ head mProfile.out2019_3_3_18.45.13_mls.txt
+    0, S, 0x00007f502fec7c33, 0x00007ffc0de862c8, 8, 0x00007f502fec7c38
+    0, S, 0x00007f502fec89b0, 0x00007ffc0de862c0, 8, 0x0000000000000000
+    0, S, 0x00007f502fec89b4, 0x00007ffc0de862b8, 8, 0x0000000000000000
+    0, S, 0x00007f502fec89b6, 0x00007ffc0de862b0, 8, 0x0000000000000000
+    0, S, 0x00007f502fec89b8, 0x00007ffc0de862a8, 8, 0x0000000000000000
+    0, S, 0x00007f502fec89ba, 0x00007ffc0de862a0, 8, 0x0000000000000000
+    0, S, 0x00007f502fec89bf, 0x00007ffc0de86298, 8, 0x0000000000000000
+    0, S, 0x00007f502fec89d6, 0x00007f50300ecc60, 8, 0x0007ad7a0237c5ae
+    0, L, 0x00007f502fec89dd, 0x00007f50300ece70, 8, 0x000000000000000e
+    0, L, 0x00007f502fec89e7, 0x00007f50300ed000, 8, 0x0000000000225e70
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
+* In this example, *mProfile* captures the control-flow and data-flow traces for a multithreaded program. `parallelSum` is an openMP
+program which accumulate the 1,000,000 elements of the array in parallel with the number of threads set from the command line. 
+The source code for the parallelSum.cpp is given below:
+
+  ```c++
+  //parallelSum.cpp
+  //Compile: g++ parallelSum.cpp -o parallelSum -fopenmp
+  //Run: ./parallelSum [number of threads]
+  #include <iostream>
+  #include <cstdlib>
+  #include <sstream>
+  #include <omp.h>
+
+  #define SIZE 1000000
+
+  int main(int argc, char* argv[]) {
+      int *arr = new int[SIZE];
+      int numThreads = 1;
+      long long int i, sum = 0;
+      for (i = 0; i < SIZE; i++) {
+          arr[i] = i;
+      }
+      if (argc == 2) {
+          std::istringstream ss(argv[1]);
+          ss >> numThreads;
+      }
+      if (argc > 2) {
+          std::cout << "Usage: ./parallelSum [number of threads]" << std::endl;
+          exit(1);
+      }
+      omp_set_num_threads(numThreads);
+  #pragma omp parallel for reduction(+:sum)
+      for (i = 0; i < SIZE; i++) {
+          sum += arr[i];
+      }
+      std::cout << "Sum: " << sum << std::endl;
+  }
+  ```
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf -mls -load -store -trace -a -- ./parallelSum 4
+  mProfile: Writing control flow traces to text file: mProfile.out2019_3_3_19.10.5_mcf.txt
+  Profile descriptor: ThreadID, Instruction Address, Target Address, Conditional or Unconditional, 
+  Direct or Indirect, Outcome
+
+  mProfile: Writing data flow traces to text file: mProfile.out2019_3_3_19.10.5_mls.txt
+  Profile descriptor: ThreadID, Load/Store, Instruction Address, Operand Address, Operand Size, Value
+  mProfile: thread begin 0 32487
+  mProfile: thread begin 1 32494
+  mProfile: thread begin 2 32495
+  mProfile: thread begin 3 32496
+  Sum: 4999999500000
+
+  # Trace and statistic file generated by the mProfile tool
+  -bash-4.2$ ls mProfile.out2019_*
+  mProfile.out2019_3_3_19.10.5_mcf.Statistics
+  mProfile.out2019_3_3_19.10.5_mcf.txt
+  mProfile.out2019_3_3_19.10.5_mls.Statistics
+  mProfile.out2019_3_3_19.10.5_mls.txt
+
+  # Statistics file 
+  -bash-4.2$ cat mProfile.out2019_3_3_19.10.5_mcf.Statistics
+  Instrumentation Time: 249395 ms
+  Number of Threads: 4
+  Traced 24224643 instructions
+  Skipped 0 instructions
+  All The Threads Total Control Transfer Instructions: 3643396
+          1295803 ( %35.57 ) Conditional Direct Taken
+          1296402 ( %35.58 ) Conditional Direct Not Taken
+          1031004 ( %28.30 ) Unconditional Direct
+          20187 ( %0.55 ) Unconditional Indirect
+                  14307 ( %70.87 ) Returns
+                  5880 ( %29.13 ) Other
+  -- Thread 0 Total Control Transfer Instructions: 2627754
+          413489 ( %15.74 ) Conditional Direct Taken
+          1163622 ( %44.28 ) Conditional Direct Not Taken
+          1030715 ( %39.22 ) Unconditional Direct
+          19928 ( %0.76 ) Unconditional Indirect
+                  14124 ( %70.88 ) Returns
+                  5804 ( %29.12 ) Other
+  -- Thread 1 Total Control Transfer Instructions: 326089
+          287859 ( %88.28 ) Conditional Direct Taken
+          38031 ( %11.66 ) Conditional Direct Not Taken
+          105 ( %0.03 ) Unconditional Direct
+          94 ( %0.03 ) Unconditional Indirect
+                  67 ( %71.28 ) Returns
+                  27 ( %28.72 ) Other
+  -- Thread 2 Total Control Transfer Instructions: 364825
+          307227 ( %84.21 ) Conditional Direct Taken
+          57399 ( %15.73 ) Conditional Direct Not Taken
+          105 ( %0.03 ) Unconditional Direct
+          94 ( %0.03 ) Unconditional Indirect
+                  67 ( %71.28 ) Returns
+                  27 ( %28.72 ) Other
+  -- Thread 3 Total Control Transfer Instructions: 324728
+          287228 ( %88.45 ) Conditional Direct Taken
+          37350 ( %11.50 ) Conditional Direct Not Taken
+          79 ( %0.02 ) Unconditional Direct
+          71 ( %0.02 ) Unconditional Indirect
+                  49 ( %69.01 ) Returns
+                  22 ( %30.99 ) Other
+
+  -bash-4.2$ cat mProfile.out2019_3_3_19.10.5_mls.Statistics
+  Instrumentation Time: 249395 ms
+  Number of Threads: 4
+  Traced 24224643 instructions
+  Traced 12683297 load instructions
+  Traced 1197488 store instructions
+  Skipped 0 instructions
+  All The Threads Total Load Operands: 12683329
+          146063 ( %1.15 ) Byte Operands
+          11943 ( %0.09 ) Word Operands
+          1208705 ( %9.53 ) DoubleWord Operands
+          11312529 ( %89.19 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          2945 ( %0.02 ) OctaWord Operands
+          1144 ( %0.01 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 0 Total Load Operands: 7298057
+          145520 ( %1.99 ) Byte Operands
+          11910 ( %0.16 ) Word Operands
+          326458 ( %4.47 ) DoubleWord Operands
+          6810258 ( %93.32 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          2855 ( %0.04 ) OctaWord Operands
+          1056 ( %0.01 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 1 Total Load Operands: 1788939
+          199 ( %0.01 ) Byte Operands
+          12 ( %0.00 ) Word Operands
+          287833 ( %16.09 ) DoubleWord Operands
+          1500830 ( %83.89 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          33 ( %0.00 ) OctaWord Operands
+          32 ( %0.00 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 2 Total Load Operands: 1808307
+          199 ( %0.01 ) Byte Operands
+          12 ( %0.00 ) Word Operands
+          307201 ( %16.99 ) DoubleWord Operands
+          1500830 ( %83.00 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          33 ( %0.00 ) OctaWord Operands
+          32 ( %0.00 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 3 Total Load Operands: 1788026
+          145 ( %0.01 ) Byte Operands
+          9 ( %0.00 ) Word Operands
+          287213 ( %16.06 ) DoubleWord Operands
+          1500611 ( %83.93 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          24 ( %0.00 ) OctaWord Operands
+          24 ( %0.00 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  All The Threads Total Store Operands: 4207922
+          1571 ( %0.04 ) Byte Operands
+          223 ( %0.01 ) Word Operands
+          1017466 ( %24.18 ) DoubleWord Operands
+          3186810 ( %75.73 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          708 ( %0.02 ) OctaWord Operands
+          1144 ( %0.03 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 0 Total Store Operands: 2706450
+          1571 ( %0.06 ) Byte Operands
+          223 ( %0.01 ) Word Operands
+          1017345 ( %37.59 ) DoubleWord Operands
+          1685547 ( %62.28 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          708 ( %0.03 ) OctaWord Operands
+          1056 ( %0.04 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 1 Total Store Operands: 500532
+          0 ( %0.00 ) Byte Operands
+          0 ( %0.00 ) Word Operands
+          43 ( %0.01 ) DoubleWord Operands
+          500457 ( %99.99 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          0 ( %0.00 ) OctaWord Operands
+          32 ( %0.01 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 2 Total Store Operands: 500532
+          0 ( %0.00 ) Byte Operands
+          0 ( %0.00 ) Word Operands
+          43 ( %0.01 ) DoubleWord Operands
+          500457 ( %99.99 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          0 ( %0.00 ) OctaWord Operands
+          32 ( %0.01 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+  -- Thread 3 Total Store Operands: 500408
+          0 ( %0.00 ) Byte Operands
+          0 ( %0.00 ) Word Operands
+          35 ( %0.01 ) DoubleWord Operands
+          500349 ( %99.99 ) QuadWord Operands
+          0 ( %0.00 ) Extended Precision Operands
+          0 ( %0.00 ) OctaWord Operands
+          24 ( %0.00 ) HexaWord Operands
+          0 ( %0.00 ) Operands of other size
+
+  # Trace file 
+  -bash-4.2$ head mProfile.out2019_3_3_19.10.5_mcf.txt
+  0, 0x00007f463781bc33, 0x00007f463781c9b0, U, D, T
+  0, 0x00007f463781c9ff, 0x00007f463781ca92, C, D, NT
+  0, 0x00007f463781ca41, 0x00007f463781ca5f, U, D, T
+  0, 0x00007f463781ca63, 0x00007f463781ca48, C, D, T
+  0, 0x00007f463781ca5d, 0x00007f463781ca92, C, D, NT
+  0, 0x00007f463781ca63, 0x00007f463781ca48, C, D, T
+  0, 0x00007f463781ca5d, 0x00007f463781ca92, C, D, NT
+  0, 0x00007f463781ca63, 0x00007f463781ca48, C, D, NT
+  0, 0x00007f463781ca6f, 0x00007f463781cc68, C, D, T
+  0, 0x00007f463781cc70, 0x00007f463781cc90, C, D, T
+
+  -bash-4.2$ head mProfile.out2019_3_3_19.10.5_mls.txt
+  0, S, 0x00007f463781bc33, 0x00007ffddae03608, 8, 0x00007f463781bc38
+  0, S, 0x00007f463781c9b0, 0x00007ffddae03600, 8, 0x0000000000000000
+  0, S, 0x00007f463781c9b4, 0x00007ffddae035f8, 8, 0x0000000000000000
+  0, S, 0x00007f463781c9b6, 0x00007ffddae035f0, 8, 0x0000000000000000
+  0, S, 0x00007f463781c9b8, 0x00007ffddae035e8, 8, 0x0000000000000000
+  0, S, 0x00007f463781c9ba, 0x00007ffddae035e0, 8, 0x0000000000000000
+  0, S, 0x00007f463781c9bf, 0x00007ffddae035d8, 8, 0x0000000000000000
+  0, S, 0x00007f463781c9d6, 0x00007f4637a40c60, 8, 0x0007b215ba136db7
+  0, L, 0x00007f463781c9dd, 0x00007f4637a40e70, 8, 0x000000000000000e
+  0, L, 0x00007f463781c9e7, 0x00007f4637a41000, 8, 0x0000000000225e70
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*	In this example, *mProfile* captures the control-flow and data-flow statistics for a multithreaded program periodically.
+By default, period is set to 100,000 instructions and it can be configured to different value with `-n` flag. The periodic
+statistics for each thread are written to a separate file.
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf -mls -load -store -dynamic -t 4 -o test_NoTrace -- 
+    ./parallelSum 4
+    mProfile: thread begin 0 32537
+    mProfile: thread begin 1 32540
+    mProfile: thread begin 2 32541
+    mProfile: thread begin 3 32542
+    Sum: 499999500000
+
+    # Trace and statistic file generated by the mProfile tool
+    -bash-4.2$ ls test_NoTrace_*
+    test_NoTrace_mcf.Statistics            test_NoTrace_mls.Statistics
+    test_NoTrace_mcf_0_Dynamic.Statistics  test_NoTrace_mls_0_Dynamic.Statistics
+    test_NoTrace_mcf_1_Dynamic.Statistics  test_NoTrace_mls_1_Dynamic.Statistics
+    test_NoTrace_mcf_2_Dynamic.Statistics  test_NoTrace_mls_2_Dynamic.Statistics
+    test_NoTrace_mcf_3_Dynamic.Statistics  test_NoTrace_mls_3_Dynamic.Statistics
+
+    # Dynamic statistics (for thread 0)
+    -bash-4.2$ head test_NoTrace_mcf_0_Dynamic.Statistics
+    ThreadId, Elapsed Instructions, Control Transfer: Total, Conditional Direct Taken, Conditional Direct Not 
+    Taken, Unconditional Direct, Unconditional Indirect: Total, Unconditional Indirect: Returns, Unconditional 
+    Indirect: Other
+    0, 100000, 23615, 10424, 8558, 2870, 1763, 1458, 305
+    0, 100000, 18980, 5933, 10459, 1437, 1151, 910, 241
+    0, 100000, 19126, 6083, 10619, 1407, 1017, 612, 405
+    0, 100000, 15983, 5574, 8106, 1496, 807, 536, 271
+    0, 100000, 15544, 6081, 7345, 1350, 768, 527, 241
+    0, 100000, 15099, 6499, 6308, 1394, 898, 616, 282
+    0, 100000, 15978, 6093, 7676, 1439, 770, 477, 293
+    0, 100000, 14774, 7077, 6061, 1052, 584, 460, 124
+    0, 100000, 15491, 6341, 7093, 1345, 712, 492, 220
+
+    -bash-4.2$ head test_NoTrace_mls_0_Dynamic.Statistics
+    ThreadId, Elapsed Instructions, Loads: Total, Byte, Word, DoubleWord, QuadWord, ExtendedPrecision, 
+    OctaWord, HexaWord, Other, Stores: Total, Byte, Word, DoubleWord, QuadWord, ExtendedPrecision, OctaWord,
+    HexaWord, Other
+    0, 100000, 21888, 7742, 247, 2008, 10821, 0, 1070, 0, 0, 8849, 427, 173, 1113, 6600, 0, 536, 0, 0
+    0, 100000, 27734, 3632, 1004, 5995, 16739, 0, 364, 0, 0, 10008, 41, 23, 922, 9020, 0, 2, 0, 0
+    0, 100000, 26399, 4073, 418, 4266, 17427, 0, 215, 0, 0, 9031, 14, 0, 697, 8320, 0, 0, 0, 0
+    0, 100000, 25866, 5448, 539, 4021, 15842, 0, 16, 0, 0, 10876, 0, 0, 805, 10071, 0, 0, 0, 0
+    0, 100000, 24888, 6073, 472, 3725, 14604, 0, 14, 0, 0, 10166, 0, 0, 783, 9383, 0, 0, 0, 0
+    0, 100000, 23737, 6065, 354, 3533, 13541, 0, 244, 0, 0, 9587, 0, 0, 924, 8663, 0, 0, 0, 0
+    0, 100000, 24807, 5800, 531, 3691, 14785, 0, 0, 0, 0, 9901, 0, 0, 716, 9185, 0, 0, 0, 0
+    0, 100000, 23043, 7340, 353, 3180, 12170, 0, 0, 0, 0, 8849, 0, 0, 688, 8161, 0, 0, 0, 0
+    0, 100000, 24453, 6110, 467, 3685, 14107, 0, 84, 0, 0, 9885, 0, 0, 740, 9145, 0, 0, 0, 0
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*	With the command shown below, mProfile skips first 100,000 instructions from collecting statistics and recording 
+  traces and then, it starts collecting the statistics and recording traces for 15,000,000 while executing the 
+  multi-threaded program, parallelSum. Please note that the number of instructions skipped or traced are not specific 
+  to a thread. Rather, they are counted from the beginning of the program regardless of which thread executes.
+  
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      -bash-4.2$ pin -t obj-intel64/mProfile.so -mcf -s 100000 -l 15000000 -- ./parallelSum 4
+      mProfile: thread begin 0 32627
+      mProfile: thread begin 1 32630
+      mProfile: thread begin 2 32631
+      mProfile: thread begin 3 32632
+      mProfile: Detaching...
+      Sum: 499999500000
+      # Inspect statistics
+      -bash-4.2$ cat mProfile.out2019_3_3_19.36.13_mcf.Statistics
+      Instrumentation Time: 3278.84 ms
+      Number of Threads: 4
+      Traced 15000000 instructions
+      Skipped 100000 instructions
+      All The Threads Total Control Transfer Instructions: 2620169
+              412242 ( %15.73 ) Conditional Direct Taken
+              1162651 ( %44.37 ) Conditional Direct Not Taken
+              1027470 ( %39.21 ) Unconditional Direct
+              17806 ( %0.68 ) Unconditional Indirect
+                      12430 ( %69.81 ) Returns
+                      5376 ( %30.19 ) Other
+      -- Thread 0 Total Control Transfer Instructions: 2432660
+              235178 ( %9.67 ) Conditional Direct Taken
+              1152476 ( %47.38 ) Conditional Direct Not Taken
+              1027333 ( %42.23 ) Unconditional Direct
+              17673 ( %0.73 ) Unconditional Indirect
+                      12343 ( %69.84 ) Returns
+                      5330 ( %30.16 ) Other
+      -- Thread 1 Total Control Transfer Instructions: 81406
+              71727 ( %88.11 ) Conditional Direct Taken
+              9525 ( %11.70 ) Conditional Direct Not Taken
+              79 ( %0.10 ) Unconditional Direct
+              75 ( %0.09 ) Unconditional Indirect
+                      53 ( %70.67 ) Returns
+                      22 ( %29.33 ) Other
+      -- Thread 2 Total Control Transfer Instructions: 48161
+              47754 ( %99.15 ) Conditional Direct Taken
+              349 ( %0.72 ) Conditional Direct Not Taken
+              29 ( %0.06 ) Unconditional Direct
+              29 ( %0.06 ) Unconditional Indirect
+                      17 ( %58.62 ) Returns
+                      12 ( %41.38 ) Other
+      -- Thread 3 Total Control Transfer Instructions: 57942
+              57583 ( %99.38 ) Conditional Direct Taken
+              301 ( %0.52 ) Conditional Direct Not Taken
+              29 ( %0.05 ) Unconditional Direct
+              29 ( %0.05 ) Unconditional Indirect
+                      17 ( %58.62 ) Returns
+                      12 ( %41.38 ) Other
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+* To skip the instrumentation of shared libraries or startup code, use the flag `-filter_no_shared_libs`.
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mls -filter_no_shared_libs -- ./parallelSum 1
+    mProfile: thread begin 0 36522
+    Sum: 499999500000
+
+    # Inspect the statistics
+    -bash-4.2$ cat mProfile.out2019_3_4_13.11.53_mls.Statistics
+    Instrumentation Time: 2277.42 ms
+    Number of Threads: 1
+    Traced 21000343 instructions
+    Traced 12000110 load instructions
+    Traced 1000075 store instructions
+    Skipped 0 instructions
+    All The Threads Total Load Operands: 12000110
+            1 ( %0.00 ) Byte Operands
+            0 ( %0.00 ) Word Operands
+            1000005 ( %8.33 ) DoubleWord Operands
+            11000104 ( %91.67 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            0 ( %0.00 ) OctaWord Operands
+            0 ( %0.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    -- Thread 0 Total Load Operands: 12000110
+            1 ( %0.00 ) Byte Operands
+            0 ( %0.00 ) Word Operands
+            1000005 ( %8.33 ) DoubleWord Operands
+            11000104 ( %91.67 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            0 ( %0.00 ) OctaWord Operands
+            0 ( %0.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* To instrument the specific function, use the option -filter_rtn followed by name of the function. In the example 
+shown below, only `main` function is instrumented. 
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mls -filter_rtn main -- ./parallelSum 1
+    mProfile: thread begin 0 36540
+    Sum: 499999500000
+
+    # Inspect the statistics
+    -bash-4.2$ cat mProfile.out2019_3_4_13.12.38_mls.Statistics
+    Instrumentation Time: 1385.91 ms
+    Number of Threads: 1
+    Traced 10000089 instructions
+    Traced 5000017 load instructions
+    Traced 1000026 store instructions
+    Skipped 0 instructions
+    All The Threads Total Load Operands: 5000017
+            0 ( %0.00 ) Byte Operands
+            0 ( %0.00 ) Word Operands
+            3 ( %0.00 ) DoubleWord Operands
+            5000014 ( %100.00 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            0 ( %0.00 ) OctaWord Operands
+            0 ( %0.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    -- Thread 0 Total Load Operands: 5000017
+            0 ( %0.00 ) Byte Operands
+            0 ( %0.00 ) Word Operands
+            3 ( %0.00 ) DoubleWord Operands
+            5000014 ( %100.00 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            0 ( %0.00 ) OctaWord Operands
+            0 ( %0.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* The name of the function given with `-filter_rtn` should match with the actual name in the executable. In C++, the names 
+of the functions are mangled by the compiler to support overloading. Before using `-filter_rtn`, verify the names of the 
+functions by inspecting the assembly code or symbol table. To specify multiple functions to instrument, use `–filter_rtn` 
+for each one of them as shown below:
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Produce assembly code from the object file
+    -bash-4.2$ objdump -d parallelSum > parallelSum.asm
+
+    # Dump the symbol table from the object file
+    -bash-4.2$ objdump -t parallelSum > parallelSum_symbolTable
+
+    -bash-4.2$ pin -t obj-intel64/mProfile.so -mls -filter_rtn main -filter_rtn main._omp_fn.0 -- ./parallelSum 1 
+    mProfile: thread begin 0 36610
+    Sum: 499999500000
+
+    -bash-4.2$ cat mProfile.out2019_3_4_13.35.41_mls.Statistics
+    Instrumentation Time: 2243.54 ms
+    Number of Threads: 1
+    Traced 21000125 instructions
+    Traced 12000023 load instructions
+    Traced 1000033 store instructions
+    Skipped 0 instructions
+    All The Threads Total Load Operands: 12000023
+            0 ( %0.00 ) Byte Operands
+            0 ( %0.00 ) Word Operands
+            1000003 ( %8.33 ) DoubleWord Operands
+            11000020 ( %91.67 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            0 ( %0.00 ) OctaWord Operands
+            0 ( %0.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    -- Thread 0 Total Load Operands: 12000023
+            0 ( %0.00 ) Byte Operands
+            0 ( %0.00 ) Word Operands
+            1000003 ( %8.33 ) DoubleWord Operands
+            11000020 ( %91.67 ) QuadWord Operands
+            0 ( %0.00 ) Extended Precision Operands
+            0 ( %0.00 ) OctaWord Operands
+            0 ( %0.00 ) HexaWord Operands
+            0 ( %0.00 ) Operands of other size
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
