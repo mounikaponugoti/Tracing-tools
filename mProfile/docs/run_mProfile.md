@@ -5,21 +5,26 @@
 pin -t obj-intel64/mProfile.so -- ./executable arguments
 ```
 *	If Pin path is not added to `.bashrc`, use absolute path to pin executable located in the root directory.
+```
 /path/to/pin/pin -t obj-intel64/mProfile.so -- ./executable arguments
+```
+### Sample Runs
 ```
 -bash-4.2$ pin -t obj-intel64/mProfile.so -- pwd
 mProfile: thread begin 0 35857
 /mnt/drive01/mProfilePinTool
+
 -bash-4.2$ /opt/pin-3.7-97619-g0d0c92f4f-gcc-linux/pin -t obj-intel64/mProfile.so -- pwd
 mProfile: thread begin 0 35860
 /mnt/drive01/mProfilePinTool
 ```
 ##	mProfile Tool Switches
-mProfile tool offers rich set of switches to profile and record traces for control flow and/or data-flow instructions.
+*mProfile* tool offers rich set of switches to profile and record traces for control flow and/or data-flow instructions.
 You can see all the available options by running the following command.
 ```
 -bash-4.2$ pwd
 /mnt/drive01/mProfilePinTool
+
 -bash-4.2$ pin -t obj-intel64/mProfile.so -h -- pwd
 Pin tools switches
 
@@ -109,11 +114,11 @@ General switches (available in pin and tool)
         Perform expensive sanity checks
 ```
 **Note:** When collecting the statistics without recording the traces (i.e. `-trace` is not set), there is no difference 
-in results with default (binary traces), `-a` (ASCII format), `-d` (disassembly) flags. Please notice that some of the flags 
+in results with default (binary traces), `-a` (ASCII format), and `-d` (disassembly) flags. Please notice that some of the flags 
 `-c` and `-f` are useful only when tracing is on.
 
-mProfile tool flags allow users to specify the following:
-*	Whether to record and write the traces to a file or not (default, does not collect traces);
+*mProfile* tool flags allow users to specify the following:
+*	Whether to record and write the traces to a file or not (default, traces are not collected);
 *	Format of the output trace file (ASCII or binary, default is binary);
 *	Capture either control-flow, data-flow traces or both (default is control-flow);
 *	Captured traces can be piped to a selected general-purpose compressor (e.g., bzip2, pbzip2, gzip, ...);
