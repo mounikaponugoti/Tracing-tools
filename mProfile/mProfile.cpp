@@ -84,7 +84,7 @@ VOID ASCIItrace(TRACE trace, VOID *v) {
             //(where the next instruction to be executed is always explicitly specified).
             if (mcfTrace.Value() == TRUE) {	 // Profile branches
                 // Is Unconditional and Direct and Taken
-                if (INS_IsDirectBranchOrCall(ins) && !INS_HasFallThrough(ins)) {
+                if (INS_IsDirectControlFlow(ins) && !INS_HasFallThrough(ins)) {
                     /* Can also get the target address as shown below if using IARG_BRANCH_TARGET_ADDR giving any issues
                      const ADDRINT target = INS_DirectBranchOrCallTargetAddress(ins);
                      INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)Emit_UnconditionalDirect_ASCII,
@@ -95,7 +95,7 @@ VOID ASCIItrace(TRACE trace, VOID *v) {
                         IARG_THREAD_ID, IARG_INST_PTR, IARG_BRANCH_TARGET_ADDR, IARG_END);
                 }
                 // Is Conditional and Direct
-                else if (INS_IsDirectBranchOrCall(ins) && INS_HasFallThrough(ins)) {
+                else if (INS_IsDirectControlFlow(ins) && INS_HasFallThrough(ins)) {
                     /* Can also get the target address as shown below if using IARG_BRANCH_TARGET_ADDR giving any issues
                     const ADDRINT target = INS_DirectBranchOrCallTargetAddress(ins);
                     INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)Emit_ConditionalDirect_ASCII,
@@ -107,7 +107,7 @@ VOID ASCIItrace(TRACE trace, VOID *v) {
                 }
 
                 // Is Unconditional and Indirect - Returns are indirect, filter XEND temporary to solve the issue with this instruction
-                else if ((INS_IsIndirectBranchOrCall(ins) || INS_IsRet(ins)) && (!INS_IsXend(ins))) {
+                else if ((INS_IsIndirectControlFlow(ins) || INS_IsRet(ins)) && (!INS_IsXend(ins))) {
                     // get statistics for only returns
                     if (INS_IsRet(ins))
                         INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)IncrementReturns, IARG_FAST_ANALYSIS_CALL, IARG_THREAD_ID, IARG_END);
@@ -169,18 +169,18 @@ VOID DisTrace(TRACE trace, VOID *v) {
             INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)SetFastForwardAndLength, IARG_THREAD_ID, IARG_END);
             if (mcfTrace.Value() == TRUE) {
                 // Is Unconditional and Direct and Taken
-                if (INS_IsDirectBranchOrCall(ins) && !INS_HasFallThrough(ins))
+                if (INS_IsDirectControlFlow(ins) && !INS_HasFallThrough(ins))
                     INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)Emit_UnconditionalDirect_ASCII_Dis,
                         //Args: Thread ID, Instruction Address, Target Address, instruction
                         IARG_THREAD_ID, IARG_INST_PTR, IARG_BRANCH_TARGET_ADDR, IARG_END);
                 // Is Conditional and Direct
-                else if (INS_IsDirectBranchOrCall(ins) && INS_HasFallThrough(ins))
+                else if (INS_IsDirectControlFlow(ins) && INS_HasFallThrough(ins))
                     INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)Emit_ConditionalDirect_ASCII_Dis,
                         //Args: Thread ID, Instruction Address, Target Address, Taken?
                         IARG_THREAD_ID, IARG_INST_PTR, IARG_BRANCH_TARGET_ADDR, IARG_BRANCH_TAKEN, IARG_END);
 
                 // Is Unconditional and Indirect - Returns are indirect, filter XEND temporary to solve the issue with this instruction
-                else if ((INS_IsIndirectBranchOrCall(ins) || INS_IsRet(ins)) && (!INS_IsXend(ins))) {
+                else if ((INS_IsIndirectControlFlow(ins) || INS_IsRet(ins)) && (!INS_IsXend(ins))) {
                     //  Get statistics for only returns
                     if (INS_IsRet(ins))
                         INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)IncrementReturns, IARG_FAST_ANALYSIS_CALL, IARG_THREAD_ID, IARG_END);
@@ -240,19 +240,19 @@ VOID BinaryTrace(TRACE trace, VOID *v) {
             INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)SetFastForwardAndLength, IARG_THREAD_ID, IARG_END);
             if (mcfTrace.Value() == TRUE) {
                 // Is Unconditional and Direct and Taken
-                if (INS_IsDirectBranchOrCall(ins) && !INS_HasFallThrough(ins))
+                if (INS_IsDirectControlFlow(ins) && !INS_HasFallThrough(ins))
                     INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)Emit_UnconditionalDirect_Bin,
                         //Args: Thread ID, Instruction Address, Target Address 
                         IARG_THREAD_ID, IARG_INST_PTR, IARG_BRANCH_TARGET_ADDR, IARG_END);
 
                 // Is Conditional and Direct
-                else if (INS_IsDirectBranchOrCall(ins) && INS_HasFallThrough(ins))
+                else if (INS_IsDirectControlFlow(ins) && INS_HasFallThrough(ins))
                     INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)Emit_ConditionalDirect_Bin,
                         //Args: Thread ID, Instruction Address, Target Address, Taken
                         IARG_THREAD_ID, IARG_INST_PTR, IARG_BRANCH_TARGET_ADDR, IARG_BRANCH_TAKEN, IARG_END);
 
                 // Is Unconditional and Indirect - Returns are indirect, filter XEND temporary to solve the issue with this instruction
-                else if ((INS_IsIndirectBranchOrCall(ins) || INS_IsRet(ins)) && (!INS_IsXend(ins))) {
+                else if ((INS_IsIndirectControlFlow(ins) || INS_IsRet(ins)) && (!INS_IsXend(ins))) {
                     // get statistics for only returns
                     if (INS_IsRet(ins))
                         INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)IncrementReturns, IARG_FAST_ANALYSIS_CALL, IARG_THREAD_ID, IARG_END);

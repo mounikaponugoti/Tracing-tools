@@ -229,7 +229,7 @@ VOID Emit_UnconditionalDirect_ASCII_Dis(const THREADID threadid, const ADDRINT a
     //Always taken 
     std::string type = ", U, D, T";
     //Descriptor String
-    ostringstream convert;
+    std::ostringstream convert;
     convert << std::dec << static_cast<UINT32>(assignedTID)
         << ", 0x" << std::hex << std::setw(ADDRWID) << std::setfill('0') << address
         << ", 0x" << std::hex << std::setw(ADDRWID) << std::setfill('0') << target

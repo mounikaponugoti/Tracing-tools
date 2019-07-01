@@ -850,9 +850,9 @@ VOID openOutput() {
         else {
             if (ASCII.Value() == FALSE) {
                 if (mcfTrace.Value() == TRUE)
-                    mcfOutFile.open(mcfTempFileName.c_str(), ios::out | ios::binary);
+                    mcfOutFile.open(mcfTempFileName.c_str(), std::ios::out | std::ios::binary);
                 if (mlsTrace.Value() == TRUE)
-                    mlsOutFile.open(mlsTempFileName.c_str(), ios::out | ios::binary);
+                    mlsOutFile.open(mlsTempFileName.c_str(), std::ios::out | std::ios::binary);
             }
             else {
                 if (mcfTrace.Value() == TRUE)
