@@ -1,5 +1,6 @@
 #	mProfile tool examples 
 
+**Note:** For more information on [building](mProfile/docs/SetupmProfile.md) and [running](mProfile/docs/run_mProfile.md) the mProfile, go to `mProfile/docs`. <br/> <br/>
 The main goal of this document is to show you how to use differnt flags available in *mProfile* tool with examples. Whenever possible, 
 multiple commands which yield same results are shown for the clarification. <br/>
 **Note:** This document does not show all the possible combinations of the flags.
